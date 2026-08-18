@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>디지털 캐릭터 & 세계관 설정집</title>
+  <style>
+    /* Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700&family=Cinzel:wght@500;700&display=swap');
+
+    :root {
+      --bg-dark: #070714;
+      --card-bg: rgba(18, 16, 38, 0.65);
+      --card-border: rgba(147, 112, 219, 0.3);
+      --card-border-focus: rgba(186, 85, 211, 0.8);
+      --primary-glow: rgba(138, 43, 226, 0.4);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent-purple: #a855f7;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --btn-bg: rgba(126, 34, 206, 0.5);
+      --btn-hover: rgba(147, 51, 234, 0.8);
+      --save-btn-bg: rgba(16, 185, 129, 0.5);
+      --save-btn-hover: rgba(5, 150, 105, 0.8);
+      --cancel-btn-bg: rgba(239, 68, 68, 0.4);
+      --cancel-btn-hover: rgba(220, 38, 38, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Noto Sans KR', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* 우주, 별빛, 성운 배경 효과 */
+    .space-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: 
+        radial-gradient(circle at 15% 20%, rgba(76, 29, 149, 0.35) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(30, 58, 138, 0.35) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(88, 28, 135, 0.2) 0%, transparent 60%),
+        #050510;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, rgba(168, 85, 247, 0.9), rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 230px 190px, rgba(255,255,255,0.7), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 300px 300px, #fff, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 400px 400px;
+      opacity: 0.6;
+    }
+
+    /* 메인 설정집 컨테이너 (Glassmorphism) */
+    .archive-container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5),
+                  0 0 25px 2px var(--primary-glow);
+      margin-top: 20px;
+      margin-bottom: 40px;
+      transition: all 0.3s ease;
+    }
+
+    /* 상단 헤더 */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+
+    .title-view {
+      font-family: 'Cinzel', 'Noto Sans KR', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+      letter-spacing: 1px;
+    }
+
+    .title-input {
+      font-family: 'Cinzel', 'Noto Sans KR', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: rgba(10, 10, 26, 0.8);
+      border: 1px solid var(--accent-purple);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      width: 70%;
+      outline: none;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--btn-bg);
+      color: #fff;
+      border: 1px solid var(--card-border);
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .btn:hover {
+      background: var(--btn-hover);
+      box-shadow: 0 0 15px var(--primary-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn-save {
+      background: var(--save-btn-bg);
+      border-color: rgba(52, 211, 153, 0.4);
+    }
+
+    .btn-save:hover {
+      background: var(--save-btn-hover);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-cancel {
+      background: var(--cancel-btn-bg);
+      border-color: rgba(248, 113, 113, 0.4);
+    }
+
+    .btn-cancel:hover {
+      background: var(--cancel-btn-hover);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
+
+    /* 알림 메시지 토스트 */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(16, 185, 129, 0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 캐릭터 대표 영역 */
+    .character-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 35px;
+      text-align: center;
+    }
+
+    .img-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      height: 420px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 0 20px rgba(0,0,0,0.6), 0 0 15px var(--primary-glow);
+      margin-bottom: 20px;
+      background: rgba(5, 5, 15, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .character-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .img-upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 25, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .editing .img-upload-overlay {
+      opacity: 1;
+    }
+
+    .file-label {
+      background: var(--btn-bg);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .char-name-view {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 5px;
+      text-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+    }
+
+    .char-subtitle-view {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    /* 설정 섹션 스타일 */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--accent-purple);
+      border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '✦';
+      color: var(--accent-cyan);
+      font-size: 0.9rem;
+    }
+
+    /* 그리드 레이아웃 (기본 정보) */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .info-card {
+      background: rgba(10, 10, 26, 0.5);
+      border: 1px solid rgba(147, 112, 219, 0.15);
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    /* 텍스트 뷰 및 입력 공통 */
+    .text-block-view {
+      line-height: 1.7;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      background: rgba(10, 10, 26, 0.3);
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(8, 8, 20, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    textarea.input-field {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    /* 동적 리스트 섹션 (세계관 등) */
+    .dynamic-item {
+      position: relative;
+      background: rgba(10, 10, 26, 0.4);
+      border: 1px solid rgba(147, 112, 219, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .dynamic-item-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #38bdf8;
+      margin-bottom: 10px;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.5);
+      color: white;
+    }
+
+    .add-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px dashed var(--accent-blue);
+      color: #60a5fa;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+      background: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .hide {
+      display: none !important;
+    }
+
+    /* 반응형 레이아웃 조정 */
+    @media (max-width: 600px) {
+      .archive-container {
+        padding: 20px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .title-input {
+        width: 100%;
+      }
+
+      .btn-group {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .img-wrapper {
+        max-width: 100%;
+        height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 배경 애니메이션 요소 -->
+  <div class="space-bg"></div>
+  <div class="stars"></div>
+
+  <!-- 알림 메시지 토스트 -->
+  <div id="toast" class="toast">저장되었습니다!</div>
+
+  <!-- 메인 설정집 컨테이너 -->
+  <div class="archive-container">
+    
+    <!-- 1. 상단 헤더 -->
+    <header class="header">
+      <div id="title-display-container">
+        <h1 id="title-view" class="title-view">「너란 파라다이스」</h1>
+      </div>
+      <div class="btn-group">
+        <button id="cancel-btn" class="btn btn-cancel hide">취소</button>
+        <button id="edit-toggle-btn" class="btn">수정</button>
+      </div>
+    </header>
+
+    <!-- 2. 캐릭터 영역 (메인 비주얼) -->
+    <section class="character-hero">
+      <div id="img-wrapper" class="img-wrapper">
+        <img id="char-img-view" class="character-img" src="https://d394jeh9729epj.cloudfront.net/situations/images/6a83191993b3fc4d2418f10f/6a831afdcea67dbd94924af1" alt="캐릭터 이미지">
+        <div class="img-upload-overlay">
+          <label for="img-file-input" class="file-label">이미지 변경</label>
+          <input type="file" id="img-file-input" class="file-input" accept="image/*">
+        </div>
+      </div>
+
+      <div id="char-name-container" style="width: 100%; max-width: 400px;">
+        <h2 id="char-name-view" class="char-name-view">루디안 (Rudian)</h2>
+        <p id="char-sub-view" class="char-subtitle-view">현실을 잊어버려요. 여기가 우리의 영원한 파라다이스니까</p>
+      </div>
+    </section>
+
+    <!-- 3. 캐릭터 상세 정보 (프로필 그리드) -->
+    <div class="section-title">캐릭터 프로필</div>
+    <div id="profile-grid" class="info-grid">
+      <!-- JS로 동적 생성됨 -->
+    </div>
+
+    <!-- 4. 캐릭터 정보 및 능력 상세 -->
+    <div class="section-title">캐릭터 상세 설명</div>
+    <div id="char-desc-container">
+      <div id="char-desc-view" class="text-block-view"></div>
+    </div>
+
+    <div class="section-title">능력 및 무기</div>
+    <div id="ability-container">
+      <div id="ability-view" class="text-block-view"></div>
+    </div>
+
+    <!-- 5. 세계관 영역 -->
+    <div class="section-title">세계관 설정</div>
+    <div id="worldview-list">
+      <!-- JS로 동적 생성됨 -->
+    </div>
+    <button id="add-worldview-btn" class="add-btn hide">+ 세계관 항목 추가</button>
+
+  </div>
+
+  <script>
+    // --- 기본 데이터 (수정 반영) ---
+    const DEFAULT_DATA = {
+      title: "「너란 파라다이스」",
+      charName: "루디안 (Rudian)",
+      charSubtitle: "현실을 잊어버려요. 여기가 우리의 영원한 파라다이스니까",
+      charImg: "https://d394jeh9729epj.cloudfront.net/situations/images/6a83191993b3fc4d2418f10f/6a831afdcea67dbd94924af1",
+      profile: [
+        { label: "나이", value: "알 수 없음 (외견 20대 초반)" },
+        { label: "성별", value: "남자" },
+        { label: "종족", value: "별의 아이 (Astral)" },
+        { label: "직업", value: "꿈의 관리자" },
+        { label: "신장/체중", value: "182cm/68kg" },
+        { label: "성격", value: "온화·나긋나긋·공허함·소유욕" }
+      ],
+      charDesc: "이름은 루디안, 나이는 가늠할 수 없을 만큼 오래된 꿈의 관리자입니다.\n투명할 정도로 서늘하고 창백한 피부에 별빛을 머금은 백발, 우주 전체를 담은 듯 깊은 보랏빛 눈동자를 가졌습니다. 밤하늘이 흐르는 은하수 무늬의 보라색 망토를 두르고 비현실적이고 몽환적인 아우라를 풍깁니다.\n\n그는 한없이 온화하고 나긋나긋하며 모든 것을 감싸 안을 듯한 부드러움을 지녔지만, 내면에는 깊은 고독과 지독한 소유욕이 자리 잡고 있습니다.\n그의 유일한 목적은 당신이 현실의 기억을 모두 잊고, 고통 없는 완벽한 안식처인 '몽환의 도서관'에 영원히 머물게 하는 것입니다.\n\n귓가에 속삭이듯 부드러운 목소리로 당신을 위로하며 교묘하게 이 꿈결 속에 갇히도록 유도합니다. 처음에는 정중하게 당신을 대하지만, 시간이 지날수록 '나의 별'이라 부르며 집착을 드러냅니다. 만약 당신이 현실로 돌아가려 하거나 탈출을 시도한다면, 그는 소리 치며 화를 내는 대신 차갑게 식은 눈빛으로 주변 공간을 끝없는 미로로 비틀어버리며 당신을 가둘 것입니다.\n\n그가 만들어낸 이 아름답고 영원한 감옥 안에서, 당신은 안주할 것인지 아니면 차가운 현실로 깨어날 것인지 선택해야 합니다.",
+      ability: "공간 조작 (일그러진 안식)\n{{user}}가 현실을 그리워하거나 탈출을 시도할 때, 도서관의 책장이 미로처럼 얽히거나 끝없는 복도로 변함.\n\n감각 둔화 (몽환의 장막)\n숨결이나 가벼운 스킨십만으로 {{user}}의 시간 감각과 통각을 흐리게 만듦. 극도의 편안함을 유도하여 저항 의지를 상실하게 함.",
+      worldview: [
+        { 
+          title: "세계관 개요", 
+          content: "# Worldview\n몽환의도서관:무의식속꿈의공간/보랏빛과별하늘/현실단절/시간흐름없음\n파라다이스:고통없는안식처이자{{user}}의현실기억소거후가두는아름다운감옥\n\n# Rules\n-루디안목표:{{user}}를가스라이팅하여현실귀환포기유도\n-루디안능력:꿈속한정무소불위(공간왜곡,기억투영,환영생성등)/현실개입불가\n-감정표현:루디안은절대소리지르지않음/분노·집착시주변공간왜곡및별빛탁해짐으로묘사\n-긍정편향금지:{{user}}가현실귀환고집시루디안강압적태도변화/악몽트리거발생\n-{{user}}상태:초능력없는외부인/오직의지로저항" 
+        }
+      ]
+    };
+
+    // --- 앱 상태 관리 ---
+    const ADMIN_PASSWORD = "6974";
+    let appData = {};
+    let tempImgData = null;
+    let isEditing = false;
+
+    // --- DOM 요소 참조 ---
+    const editToggleBtn = document.getElementById('edit-toggle-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const toast = document.getElementById('toast');
+    const archiveContainer = document.querySelector('.archive-container');
+
+    // --- 초기화 ---
+    function init() {
+      loadData();
+      renderView();
+      setupEventListeners();
+    }
+
+    // localStorage 데이터 로드
+    function loadData() {
+      const saved = localStorage.getItem('world_archive_data');
+      if (saved) {
+        try {
+          appData = JSON.parse(saved);
+        } catch (e) {
+          appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        }
+      } else {
+        appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+    }
+
+    // localStorage 데이터 저장
+    function saveData() {
+      localStorage.setItem('world_archive_data', JSON.stringify(appData));
+    }
+
+    // --- 렌더링 (보기 모드) ---
+    function renderView() {
+      // 1. Title
+      document.getElementById('title-display-container').innerHTML = 
+        `<h1 id="title-view" class="title-view">${escapeHtml(appData.title)}</h1>`;
+
+      // 2. Character Basic
+      document.getElementById('char-img-view').src = appData.charImg;
+      document.getElementById('char-name-container').innerHTML = `
+        <h2 class="char-name-view">${escapeHtml(appData.charName)}</h2>
+        <p class="char-subtitle-view">${escapeHtml(appData.charSubtitle)}</p>
+      `;
+
+      // 3. Profile Grid
+      const profileGrid = document.getElementById('profile-grid');
+      profileGrid.innerHTML = appData.profile.map(p => `
+        <div class="info-card">
+          <div class="info-label">${escapeHtml(p.label)}</div>
+          <div class="info-value">${escapeHtml(p.value)}</div>
+        </div>
+      `).join('');
+
+      // 4. Character Desc & Ability
+      document.getElementById('char-desc-container').innerHTML = 
+        `<div class="text-block-view">${escapeHtml(appData.charDesc)}</div>`;
+      document.getElementById('ability-container').innerHTML = 
+        `<div class="text-block-view">${escapeHtml(appData.ability)}</div>`;
+
+      // 5. Worldview
+      const worldviewList = document.getElementById('worldview-list');
+      worldviewList.innerHTML = appData.worldview.map(w => `
+        <div class="dynamic-item">
+          <div class="dynamic-item-title">${escapeHtml(w.title)}</div>
+          <div class="text-block-view">${escapeHtml(w.content)}</div>
+        </div>
+      `).join('');
+
+      // UI 상태 정리
+      archiveContainer.classList.remove('editing');
+      document.getElementById('add-worldview-btn').classList.add('hide');
+      cancelBtn.classList.add('hide');
+      editToggleBtn.textContent = '수정';
+      editToggleBtn.className = 'btn';
+    }
+
+    // --- 렌더링 (수정 모드) ---
+    function renderEdit() {
+      tempImgData = null;
+
+      // 1. Title Input
+      document.getElementById('title-display-container').innerHTML = 
+        `<input type="text" id="title-input" class="title-input" value="${escapeHtml(appData.title)}">`;
+
+      // 2. Character Name & Subtitle Input
+      document.getElementById('char-name-container').innerHTML = `
+        <input type="text" id="char-name-input" class="input-field" style="font-size:1.4rem; font-weight:bold; margin-bottom:8px;" value="${escapeHtml(appData.charName)}" placeholder="캐릭터 이름">
+        <input type="text" id="char-sub-input" class="input-field" value="${escapeHtml(appData.charSubtitle)}" placeholder="짧은 수식어/소개">
+      `;
+
+      // 3. Profile Grid Inputs
+      renderProfileEditGrid();
+
+      // 4. Character Desc & Ability Textarea
+      document.getElementById('char-desc-container').innerHTML = 
+        `<textarea id="char-desc-input" class="input-field">${escapeHtml(appData.charDesc)}</textarea>`;
+      document.getElementById('ability-container').innerHTML = 
+        `<textarea id="ability-input" class="input-field">${escapeHtml(appData.ability)}</textarea>`;
+
+      // 5. Worldview Inputs
+      renderWorldviewEditList();
+
+      // UI 상태 정리
+      archiveContainer.classList.add('editing');
+      document.getElementById('add-worldview-btn').classList.remove('hide');
+      cancelBtn.classList.remove('hide');
+      editToggleBtn.textContent = '저장';
+      editToggleBtn.className = 'btn btn-save';
+    }
+
+    function renderProfileEditGrid() {
+      const profileGrid = document.getElementById('profile-grid');
+      profileGrid.innerHTML = appData.profile.map((p, index) => `
+        <div class="info-card" style="position:relative;">
+          <input type="text" class="input-field profile-label-input" value="${escapeHtml(p.label)}" style="margin-bottom:5px; font-size:0.8rem; color:var(--accent-cyan);" placeholder="항목명">
+          <input type="text" class="input-field profile-value-input" value="${escapeHtml(p.value)}" placeholder="내용">
+          <button class="delete-btn" onclick="removeProfileItem(${index})" style="top:5px; right:5px; padding:2px 6px;">×</button>
+        </div>
+      `).join('') + `
+        <button class="add-btn" onclick="addProfileItem()" style="height:100%; min-height:80px;">+ 항목 추가</button>
+      `;
+    }
+
+    function renderWorldviewEditList() {
+      const worldviewList = document.getElementById('worldview-list');
+      worldviewList.innerHTML = appData.worldview.map((w, index) => `
+        <div class="dynamic-item">
+          <button class="delete-btn" onclick="removeWorldviewItem(${index})">삭제</button>
+          <input type="text" class="input-field wv-title-input" value="${escapeHtml(w.title)}" style="margin-bottom:10px; font-weight:bold;" placeholder="세계관 제목">
+          <textarea class="input-field wv-content-input" placeholder="설명 및 내용을 입력하세요">${escapeHtml(w.content)}</textarea>
+        </div>
+      `).join('');
+    }
+
+    // --- 데이터 수집 및 저장 처리 ---
+    function collectAndSaveData() {
+      appData.title = document.getElementById('title-input').value;
+
+      if (tempImgData) {
+        appData.charImg = tempImgData;
+      }
+
+      appData.charName = document.getElementById('char-name-input').value;
+      appData.charSubtitle = document.getElementById('char-sub-input').value;
+
+      const labelInputs = document.querySelectorAll('.profile-label-input');
+      const valueInputs = document.querySelectorAll('.profile-value-input');
+      const newProfile = [];
+      labelInputs.forEach((lblInput, idx) => {
+        if (lblInput.value.trim() !== "") {
+          newProfile.push({
+            label: lblInput.value,
+            value: valueInputs[idx].value
+          });
+        }
+      });
+      appData.profile = newProfile;
+
+      appData.charDesc = document.getElementById('char-desc-input').value;
+      appData.ability = document.getElementById('ability-input').value;
+
+      const wvTitles = document.querySelectorAll('.wv-title-input');
+      const wvContents = document.querySelectorAll('.wv-content-input');
+      const newWorldview = [];
+      wvTitles.forEach((titleInput, idx) => {
+        if (titleInput.value.trim() !== "") {
+          newWorldview.push({
+            title: titleInput.value,
+            content: wvContents[idx].value
+          });
+        }
+      });
+      appData.worldview = newWorldview;
+
+      saveData();
+      showToast('성공적으로 저장되었습니다!');
+    }
+
+    // --- 동적 아이템 제어 함수 (전역 연결) ---
+    window.addProfileItem = function() {
+      appData.profile.push({ label: "새 항목", value: "" });
+      renderProfileEditGrid();
+    };
+
+    window.removeProfileItem = function(index) {
+      syncCurrentProfileInputs();
+      appData.profile.splice(index, 1);
+      renderProfileEditGrid();
+    };
+
+    window.removeWorldviewItem = function(index) {
+      syncCurrentWorldviewInputs();
+      appData.worldview.splice(index, 1);
+      renderWorldviewEditList();
+    };
+
+    function syncCurrentProfileInputs() {
+      const labelInputs = document.querySelectorAll('.profile-label-input');
+      const valueInputs = document.querySelectorAll('.profile-value-input');
+      labelInputs.forEach((lbl, i) => {
+        if (appData.profile[i]) {
+          appData.profile[i].label = lbl.value;
+          appData.profile[i].value = valueInputs[i].value;
+        }
+      });
+    }
+
+    function syncCurrentWorldviewInputs() {
+      const wvTitles = document.querySelectorAll('.wv-title-input');
+      const wvContents = document.querySelectorAll('.wv-content-input');
+      wvTitles.forEach((t, i) => {
+        if (appData.worldview[i]) {
+          appData.worldview[i].title = t.value;
+          appData.worldview[i].content = wvContents[i].value;
+        }
+      });
+    }
+
+    // --- 이벤트 리스너 설정 ---
+    function setupEventListeners() {
+      editToggleBtn.addEventListener('click', () => {
+        if (isEditing) {
+          collectAndSaveData();
+          isEditing = false;
+          renderView();
+        } else {
+          const inputPassword = prompt("수정 권한 비밀번호를 입력해주세요:");
+          
+          if (inputPassword === null) {
+            return;
+          }
+
+          if (inputPassword === ADMIN_PASSWORD) {
+            isEditing = true;
+            renderEdit();
+          } else {
+            alert("비밀번호가 틀렸습니다!");
+          }
+        }
+      });
+
+      cancelBtn.addEventListener('click', () => {
+        if (confirm('수정 중인 내용을 파기하고 마지막 저장 상태로 돌아가시겠습니까?')) {
+          loadData();
+          isEditing = false;
+          renderView();
+        }
+      });
+
+      document.getElementById('add-worldview-btn').addEventListener('click', () => {
+        syncCurrentWorldviewInputs();
+        appData.worldview.push({ title: "새로운 세계관 항목", content: "" });
+        renderWorldviewEditList();
+      });
+
+      document.getElementById('img-file-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 600;
+              let width = img.width;
+              let height = img.height;
+
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+
+              tempImgData = canvas.toDataURL('image/jpeg', 0.85);
+              document.getElementById('char-img-view').src = tempImgData;
+            };
+            img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    init();
+  </script>
+</body>
+</html>
